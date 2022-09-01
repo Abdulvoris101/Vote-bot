@@ -1,7 +1,12 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time
+import telebot
 
+token = '5664019486:AAGdBQKWdic-MVhcZtx11h6wAMGwXnEE900'
+
+
+bot = telebot.TeleBot(token, parse_mode='HTML') 
 
 options = webdriver.ChromeOptions()
 options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36')
