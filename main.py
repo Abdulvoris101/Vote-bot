@@ -11,8 +11,35 @@ url = "https://openbudget.uz/boards/6/129485/"
 
 try:
     driver.get(url=url)
-    btn_elem = driver.find_element(By.XPATH, '//*[@id="__layout"]/div/section/div/div/div[2]/div/div[5]/div[2]/div/a')
-    print(btn_elem.text)
+
+    vote_btn = driver.find_element(By.XPATH, '//*[@id="__layout"]/div/section/div/div/div[2]/div/div[5]/div[2]/div/a')
+    vote_btn.click()
+
+    time.sleep(2)
+
+    get_sms = driver.find_element(By.XPATH, '//*[@id="__layout"]/div/section/div[2]/div/div[2]/div/a')
+    get_sms.click()
+
+    time.sleep(2)
+
+    phone_num = driver.find_element(By.ID, 'phone')
+    phone_num.send_keys("909174227")
+    
+    time.sleep(3)
+    
+
+    verif_phone = driver.find_element(By.XPATH, '//*[@id="__layout"]/div/section/div[2]/div/div[2]/form/div[2]/button')
+    verif_phone.click()
+
+    time.sleep(3)
+
+    key = str(input('Key: '))
+    time.sleep(2)
+
+    input_verif = driver.find_element(By.XPATH, '//*[@id="phone"]').send_keys(key)
+    time.sleep(2)
+    driver.find_element(By.XPATH, '//*[@id="__layout"]/div/section/div[2]/div/div[2]/form/div[2]/button').click()
+
     time.sleep(5)
 
 except Exception as ex:
