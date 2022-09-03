@@ -1,4 +1,3 @@
-from tokenize import Token
 import telebot
 from telebot import types
 import time
@@ -10,8 +9,6 @@ token = TOKEN # your token
 
 
 bot = telebot.TeleBot(token, parse_mode='HTML')
-
-
 
 
 @bot.message_handler(commands=['start'])
