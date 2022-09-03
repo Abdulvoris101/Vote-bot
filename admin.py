@@ -65,6 +65,7 @@ def create_user(message):
 
     use = sql.execute(f"SELECT id FROM admins WHERE telegram_id={telegram_id}")
 
+    print(use)
 
     if use.fetchone() is None:
         sql.execute(f"INSERT INTO admins(first_name, username, telegram_id, status) VALUES(?, ?, ?, ?)", values) 

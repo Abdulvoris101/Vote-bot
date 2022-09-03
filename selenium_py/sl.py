@@ -19,7 +19,7 @@ url = "https://openbudget.uz/boards/6/156480"
 useragent = UserAgent()
 options = webdriver.ChromeOptions()
 options.add_argument(f'user-agent={useragent.random}')
-options.headless = True
+options.headless = False
 # options.add_argument("--window-size=1920,1080")
 options.add_argument('--ignore-certificate-errors')
 # options.add_argument('--allow-running-insecure-content')
@@ -60,9 +60,9 @@ class Vote:
         self.phone_number = phone_number
 
         use = sql.execute(f"SELECT id FROM users WHERE telegram_id={telegram_id}")
-        print(f'{use.fetchone()} - users')
+        time.sleep(4)
 
-        if use.fetchone() is None:
+        if use.fetchone() == None:
             print('save_user')
             sql.execute(f"INSERT INTO users(first_name, username, telegram_id, status, phone_number, joined) VALUES(?, ?, ?, ?, ?, ?)", values) 
             db.commit()
@@ -87,6 +87,7 @@ class Vote:
         html = driver.page_source
 
         if self.parsing(html):
+            print('In the first')
             # Assaign values to total and current values
             self.main(bot, msg)
 
