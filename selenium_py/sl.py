@@ -19,7 +19,7 @@ url = "https://openbudget.uz/boards/6/156480"
 useragent = UserAgent()
 options = webdriver.ChromeOptions()
 options.add_argument(f'user-agent={useragent.random}')
-options.headless = False
+options.headless = True
 # options.add_argument("--window-size=1920,1080")
 options.add_argument('--ignore-certificate-errors')
 # options.add_argument('--allow-running-insecure-content')
