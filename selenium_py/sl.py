@@ -60,9 +60,10 @@ class Vote:
         self.phone_number = phone_number
 
         use = sql.execute(f"SELECT id FROM users WHERE telegram_id={telegram_id}")
-        print(use.fetchone())
+        print(f'{use.fetchone()} - users')
 
         if use.fetchone() is None:
+            print('save_user')
             sql.execute(f"INSERT INTO users(first_name, username, telegram_id, status, phone_number, joined) VALUES(?, ?, ?, ?, ?, ?)", values) 
             db.commit()
         else:
@@ -91,7 +92,7 @@ class Vote:
 
         else:
             driver.refresh()
-            time.sleep(5)
+            time.sleep(10)
 
             bot.send_message(msg.chat.id, 'Biroz kuting')
 
@@ -100,7 +101,7 @@ class Vote:
             if self.parsing(html_2):
                 self.main(bot, msg)
             else:
-                bot.send_message(msg.chat.id, 'Serverdan javob yo\'q')
+                bot.send_message(msg.chat.id, 'Serverdan javob yo\'q, boshqatan urinib koring /start')
             
     
     def main(self, bot, msg):
@@ -156,13 +157,13 @@ class Vote:
     def sms_verif(self, msg_key):
         input_verif = self.driver.find_element(By.XPATH, '//*[@id="phone"]').send_keys(msg_key.text)
 
-        time.sleep(2)
+        time.sleep(4)
 
         self.driver.find_element(By.XPATH, '//*[@id="__layout"]/div/section/div[2]/div/div[2]/form/div[2]/button').click()
 
         checked_m = self.bot.send_message(msg_key.chat.id, "Tekshirilmoqda...")
 
-        time.sleep(5)
+        time.sleep(8)
 
         try:
             error = self.driver.find_element(By.XPATH, '//*[@id="__layout"]/div/section/div[2]/div/div[2]/form/p')
@@ -187,8 +188,6 @@ class Vote:
     def parsing(self, html):
         soup = BeautifulSoup(html, 'lxml')
         txt = soup.find('div', class_='pages-title')
-        print(txt)
-       
         if txt:
             return True
 
