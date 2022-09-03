@@ -1,5 +1,6 @@
 # Vote-bot
 This bot for vote to **openbudget.uz**.
+
  Step by step:
 	 1. git clone https://github.com/Abdulvoris101/Vote-bot.git
 	 2. create env 
