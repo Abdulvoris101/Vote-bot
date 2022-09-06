@@ -1,3 +1,4 @@
+from lib2to3.pgen2 import driver
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time
@@ -19,7 +20,7 @@ url = "https://openbudget.uz/boards/6/156480"
 useragent = UserAgent()
 options = webdriver.ChromeOptions()
 options.add_argument(f'user-agent={useragent.random}')
-options.headless = False
+options.headless = True
 # options.add_argument("--window-size=1920,1080")
 options.add_argument('--ignore-certificate-errors')
 # options.add_argument('--allow-running-insecure-content')
@@ -44,65 +45,83 @@ sql.execute("""CREATE TABLE IF NOT EXISTS users (
 
 db.commit()
 
+def save_user(bot, phone_number, msg):
+    telegram_id = msg.chat.id
+    first_name = msg.chat.first_name
+    username = msg.chat.username
+    status = 0
+    joined = datetime.now()
+
+    values = first_name, username, telegram_id, status, phone_number, joined
+
+    use = sql.execute(f"SELECT id FROM users WHERE telegram_id={telegram_id}")
+    time.sleep(4)
+
+    if use.fetchone() == None:
+        sql.execute(f"INSERT INTO users(first_name, username, telegram_id, status, phone_number, joined) VALUES(?, ?, ?, ?, ?, ?)", values) 
+        db.commit()
+        return True
+    else:
+        print('Have this user')
+        sql.execute(f" UPDATE users SET phone_number = {phone_number} WHERE telegram_id = {msg.chat.id};")
+        db.commit()
+        return True
 
 class Vote:
-    def __init__(self, phone_number, bot, msg):
-
+    def __init__(self, bot, msg):
         telegram_id = msg.chat.id
-        first_name = msg.chat.first_name
-        username = msg.chat.username
-        status = 0
-        joined = datetime.now()
-
-        values = first_name, username, telegram_id, status, phone_number, joined
-
-
-        self.phone_number = phone_number
-
-        use = sql.execute(f"SELECT id FROM users WHERE telegram_id={telegram_id}")
-        time.sleep(4)
-
-        if use.fetchone() == None:
-            print('save_user')
-            sql.execute(f"INSERT INTO users(first_name, username, telegram_id, status, phone_number, joined) VALUES(?, ?, ?, ?, ?, ?)", values) 
-            db.commit()
-        else:
-            print('Have this user')
+        phone_number = sql.execute(f"SELECT phone_number FROM users WHERE telegram_id={telegram_id}").fetchone()
+        
+        
 
         driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
 
         self.driver = driver
         self.bot = bot
 
+        
         driver.get(url=url)
         
+        self.valid_phone = str(phone_number).replace('(', '').replace(')', '').replace(',', '')
+
+        
+
+        self.phone_number = phone_number
+
+        
+
         html = driver.page_source
 
-        self.server_m = bot.send_message(msg.chat.id, 'Serverdan javob kutilmoqda...')
-        
-        driver.refresh()
-        
-        time.sleep(5)
-
-        html = driver.page_source
-
-        if self.parsing(html):
-            print('In the first')
-            # Assaign values to total and current values
-            self.main(bot, msg)
-
+        if self.phone_number == None or self.valid_phone == '' or self.valid_phone == "''":
+            bot.send_message(msg.chat.id, 'Iltimos /start ni bosib registratsiyadan o\'ting')
+            
+            driver.quit()
         else:
+
+            self.server_m = bot.send_message(msg.chat.id, 'Serverdan javob kutilmoqda...')
+            
             driver.refresh()
-            time.sleep(10)
+            
+            time.sleep(5)
 
-            bot.send_message(msg.chat.id, 'Biroz kuting')
+            html = driver.page_source
 
-            html_2 = driver.page_source
-
-            if self.parsing(html_2):
+            if self.parsing(html):
+                # Assaign values to total and current values
                 self.main(bot, msg)
+
             else:
-                bot.send_message(msg.chat.id, 'Serverdan javob yo\'q, boshqatan urinib koring /start')
+                driver.refresh()
+                time.sleep(10)
+
+                bot.send_message(msg.chat.id, 'Biroz kuting')
+
+                html_2 = driver.page_source
+
+                if self.parsing(html_2):
+                    self.main(bot, msg)
+                else:
+                    bot.send_message(msg.chat.id, 'Serverdan javob yo\'q, boshqatan urinib koring /start')
             
     
     def main(self, bot, msg):
@@ -121,7 +140,8 @@ class Vote:
         time.sleep(3)
     
         # phone_num - input fill phone number
-
+        
+     
         self.driver.find_element(By.ID, 'phone').send_keys(self.phone_number)
 
         bot.delete_message(msg.chat.id, one_m.message_id)

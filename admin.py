@@ -65,7 +65,6 @@ def create_user(message):
 
     use = sql.execute(f"SELECT id FROM admins WHERE telegram_id={telegram_id}")
 
-    print(use)
 
     if use.fetchone() is None:
         sql.execute(f"INSERT INTO admins(first_name, username, telegram_id, status) VALUES(?, ?, ?, ?)", values) 
@@ -117,8 +116,6 @@ def check_user(message):
     status = sql.execute(f"SELECT status FROM admins WHERE telegram_id={message.chat.id}")
 
     status_f = str(status.fetchone()).replace('(', '').replace(')', '').replace(',', '')
-    print(status_f)
-    print(status.fetchone())
 
     global admin
     admin = False
