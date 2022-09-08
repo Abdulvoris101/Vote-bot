@@ -11,6 +11,7 @@ import sqlite3
 from datetime import datetime
 from webdriver_manager.chrome import ChromeDriverManager
 
+
 db = sqlite3.connect('server.db', check_same_thread=False)
 sql = db.cursor()
 
@@ -20,17 +21,28 @@ url = "https://openbudget.uz/boards/6/156480"
 useragent = UserAgent()
 options = webdriver.ChromeOptions()
 options.add_argument(f'user-agent={useragent.random}')
-options.headless = True
-# options.add_argument("--window-size=1920,1080")
+options.headless = False
+
+
+options.add_argument('--headless')
+options.add_argument('--no-sandbox')
+options.add_argument('--disable-dev-shm-usage')
+
+options.add_argument('--headless')
+options.add_argument('--no-sandbox')
+options.add_argument('--disable-dev-shm-usage')
+
+
+options.add_argument("--window-size=1920,1080")
 options.add_argument('--ignore-certificate-errors')
-# options.add_argument('--allow-running-insecure-content')
-# options.add_argument("--disable-extensions")
-# options.add_argument("--proxy-server='direct://'")
-# options.add_argument("--proxy-bypass-list=*")
-# options.add_argument("--start-maximized")
-# options.add_argument('--disable-gpu')
-# options.add_argument('--disable-dev-shm-usage')
-# options.add_argument('--no-sandbox')
+options.add_argument('--allow-running-insecure-content')
+options.add_argument("--disable-extensions")
+options.add_argument("--proxy-server='direct://'")
+options.add_argument("--proxy-bypass-list=*")
+options.add_argument("--start-maximized")
+options.add_argument('--disable-gpu')
+options.add_argument('--disable-dev-shm-usage')
+options.add_argument('--no-sandbox')
 options.add_argument('--ignore-ssl-errors')
 
 sql.execute("""CREATE TABLE IF NOT EXISTS users (
@@ -126,13 +138,13 @@ class Vote:
     
     def main(self, bot, msg):
         # vote_btn click
-        self.driver.find_element(By.XPATH, '//*[@id="__layout"]/div/section/div/div/div[2]/div/div[5]/div[2]/div/a').click()
+        self.driver.find_element(By.XPATH, '//*[@id="__layout"]/div/section/div/div/div[2]/div/div[5]/div[2]/div/a/img').click()
 
         time.sleep(2)
 
         # click to sms verification
 
-        self.driver.find_element(By.XPATH, '//*[@id="__layout"]/div/section/div[2]/div/div[2]/div/a').click()
+        self.driver.find_element(By.XPATH, './/*[@id="__layout"]/div/section/div[2]/div/div[2]/div/a').click()
 
         bot.delete_message(msg.chat.id, self.server_m.message_id)
         one_m = bot.send_message(msg.chat.id, 'Bir daqiqa...')
@@ -155,9 +167,9 @@ class Vote:
         self.driver.find_element(By.XPATH, '//*[@id="__layout"]/div/section/div[2]/div/div[2]/form/div[2]/button').click()
     
 
-        form = self.driver.find_element(By.CLASS_NAME, 'form')
+        form = self.driver.find_element(By.XPATH, '//*[@id="__layout"]/div/section/div[2]/div/div[2]/form')
 
-        time.sleep(10)
+        time.sleep(7)
 
         try:
             error = form.find_element(By.XPATH, '//*[@id="__layout"]/div/section/div[2]/div/div[2]/form/p')
@@ -176,18 +188,18 @@ class Vote:
 
 
     def sms_verif(self, msg_key):
-        input_verif = self.driver.find_element(By.XPATH, '//*[@id="phone"]').send_keys(msg_key.text)
+        input_verif = self.driver.find_element(By.CSS_SELECTOR, 'input[data-v-17ccf45d]').send_keys(msg_key.text)
 
         time.sleep(4)
 
-        self.driver.find_element(By.XPATH, '//*[@id="__layout"]/div/section/div[2]/div/div[2]/form/div[2]/button').click()
+        self.driver.find_element(By.CSS_SELECTOR, 'button[data-v-17ccf45d]').click()
 
         checked_m = self.bot.send_message(msg_key.chat.id, "Tekshirilmoqda...")
 
         time.sleep(8)
 
         try:
-            error = self.driver.find_element(By.XPATH, '//*[@id="__layout"]/div/section/div[2]/div/div[2]/form/p')
+            error = self.driver.find_element(By.CSS_SELECTOR, 'p[data-v-17ccf45d]')
 
             if error:
                 self.bot.delete_message(msg_key.chat.id, checked_m.message_id)
