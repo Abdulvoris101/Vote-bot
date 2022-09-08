@@ -21,7 +21,7 @@ url = "https://openbudget.uz/boards/6/156480"
 useragent = UserAgent()
 options = webdriver.ChromeOptions()
 options.add_argument(f'user-agent={useragent.random}')
-options.headless = False
+options.headless = True
 
 
 options.add_argument('--headless')
